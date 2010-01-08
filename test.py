@@ -10,5 +10,5 @@ from CIMatrix import CIMatrixEntry
 a = CIMatrixEntry("0")
 b = CIMatrixEntry("-1")
 
-print a-b
+print -CIMatrixEntry("2")
 

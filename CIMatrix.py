@@ -65,8 +65,9 @@ class CIMatrixEntry(object):
                 j = int(other.s)
                 k = i-j
                 if k < 0:
-                    if j == 0 : return CIMatrixEntry(str(k))
-                    else : raise NotReducibleError
+                    if j <= 0 : return CIMatrixEntry(str(k))
+                    else :
+                        raise NotReducibleError
                 if k == 0:
                     if i >= 0 : return CIMatrixEntry("0")
                     else :
@@ -76,8 +77,8 @@ class CIMatrixEntry(object):
 
     def __neg__ (self):
         """ Inversion, + -> -, - > +, everything else stays the same """
-        if self.hasStar: return self
-        else: return CIMatrixEntry(str(-int(self.s)))
+        if self.hasStar(): return self
+        return CIMatrixEntry(str(-int(self.s)))
 
     def __eq__ (self, other):
         if self.s == other.s : return True
@@ -91,7 +92,7 @@ class CIMatrixEntry(object):
         if self.s=="0": return "0"
         if self.hasStar(): return "*"
         i = int(self.s)
-        if abs (i) > 2: return str(i)
+        if abs (i) >= 2: return str(i)
         if i > 0: return "+"
         else : return "-"
         

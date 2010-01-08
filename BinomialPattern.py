@@ -83,9 +83,21 @@ class BinomialPattern222k(object):
         "Fixes the pattern such that the last entry is a -"
         l = flatten(self.matrix.getRawList())
         l.reverse()
-        if l.index("+1") < l.index("-"):
-            ### Pattern is wrong
-            self.invert()
+        signs = []
+        for ll in l:
+            if ll.hasStar() :
+                signs.append(0)
+            else :
+                i = int(ll.s)
+                if i == 0 : signs.append(0)
+                else : 
+                    if i > 0 : signs.append(1)
+                    else : signs.append(-1)
+        try:
+            if signs.index(1) < signs.index(-1):
+                self.invert()
+        except ValueError:
+            pass
 
     def getString (self):
         """return string representing the pattern.
@@ -109,7 +121,7 @@ class BinomialPattern222k(object):
         try:
             for i in range(4):
                 for j in range(2*self.dim2):
-                    redu.matrix.setval(i,j, redu.matrix.getval(i,j)-p2.matrix.getval(i,j))
+                    redu.matrix.setval(i,j, redu.matrix.getval(i,j) - p2.matrix.getval(i,j) )
         except NotReducibleError:
             return -1
         # Ok, was reducible
