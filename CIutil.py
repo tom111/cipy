@@ -1,4 +1,5 @@
 def removeDup (l1,l2):
+    "Removes and returns duplicates from two lists"
     rej = []
     for l in l1:
         try:
@@ -10,6 +11,7 @@ def removeDup (l1,l2):
     return rej;
 
 def flatten(lst):
+    "Flattens a list of lists 1 level"
     ret = []
     for elem in lst:
         if type(elem) in (tuple, list):
