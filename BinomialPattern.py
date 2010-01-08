@@ -85,7 +85,7 @@ class BinomialPattern222k(object):
         l.reverse()
         signs = []
         for ll in l:
-            if ll.hasStar() :
+            if ll.star :
                 signs.append(0)
             else :
                 i = int(ll.s)

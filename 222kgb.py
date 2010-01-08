@@ -41,7 +41,7 @@ def reduceMax(p, gb):
 def isZero (p):
     l = flatten(p.matrix.getRawList())
     for ll in l:
-        if not ll.hasStar():
+        if not ll.star:
             if not (int(ll.s) == 0):
                 return False
     return True
@@ -63,6 +63,14 @@ def gbcycle (gb):
             sp.printAsMatrix()
             gb.append(sp)
 
+gbcycle(currentgb)
+gbcycle(currentgb)
+
+print len(currentgb)
+
+currentgb[-1].printAsMatrix()
+
+exit(1)
 le = 0 
 while (le < len(currentgb)):
     gbcycle(currentgb)

@@ -1,7 +1,5 @@
 "Python Classes for CIMatrices"
 
-import re
-
 class NotReducibleError(Exception):
     pass
 
@@ -12,7 +10,8 @@ class CIMatrixEntry(object):
     def __init__(self, s):
         "s is a string representation of the entry"
         self.s = s
-        self.sre = re.compile("\\*") # Regular Expression searching a star
+        if s == "*" : self.star=True
+        else: self.star=False
 
     def __add__ (self, other):
         """addition - corresponds to Spair formation
@@ -23,15 +22,15 @@ class CIMatrixEntry(object):
            + + + = 0
            0 + x = x
            """
-        if self.hasStar():
-            if other.hasStar():
+        if self.star:
+            if other.star:
                 return CIMatrixEntry("*")
             j = int(other.s)
             if abs(j) > 1: raise NotImplementedError # Is 'higher star arithmetic' necessary?
             if j == 0: return CIMatrixEntry("*")
             else: return CIMatrixEntry (str(-j))
         else:
-            if other.hasStar():
+            if other.star:
                 i = int(self.s)
                 if abs(i) > 1: raise NotImplementedError
                 if i == 0: return CIMatrixEntry("*")
@@ -50,15 +49,15 @@ class CIMatrixEntry(object):
         """ subtraction - corresponds to reduction of moves
         Raises NotReducibleError if not reducible
         """
-        if self.hasStar(): # Self is a star
-            if other.hasStar(): return CIMatrixEntry("*")
+        if self.star: # Self is a star
+            if other.star: return CIMatrixEntry("*")
             else :
                 j = int(other.s)
                 if j == 0 : return CIMatrixEntry("*")
                 else : return CIMatrixEntry(str(-j))
         else: # self.s is an integer
             i = int(self.s)
-            if other.hasStar():
+            if other.star:
                 if i == 0: return CIMatrixEntry("*")
                 else : return CIMatrixEntry(str(i))
             else: # Both are integer
@@ -77,7 +76,7 @@ class CIMatrixEntry(object):
 
     def __neg__ (self):
         """ Inversion, + -> -, - > +, everything else stays the same """
-        if self.hasStar(): return self
+        if self.star: return self
         return CIMatrixEntry(str(-int(self.s)))
 
     def __eq__ (self, other):
@@ -90,15 +89,12 @@ class CIMatrixEntry(object):
     
     def __repr__(self):
         if self.s=="0": return "0"
-        if self.hasStar(): return "*"
+        if self.star: return "*"
         i = int(self.s)
         if abs (i) >= 2: return str(i)
         if i > 0: return "+"
         else : return "-"
         
-    def hasStar(self):
-        if self.sre.search(self.s) == None: return False
-        return True
 
 ####### END CIMATRIXENTRY ################
 
