@@ -31,6 +31,19 @@ class BinomialPattern222k(object):
         n = self.dim2*(k-1) + (l-1)# Colindex
         return (m,n)
 
+    ## Comparison Operators ##
+
+    def __eq__(self, other):
+        for i in range(4):
+            for j in range(2*self.dim2):
+                if not self.matrix.getval(i,j) == other.matrix.getval(i,j):
+                    return False
+        return True;
+
+    def __ne__(self, other):
+        if self == other: return False
+        else: return True
+
     def printRaw (self): self.matrix.printRawList()
 
     def printAsMatrix (self): self.matrix.printMatrix()
@@ -53,6 +66,11 @@ class BinomialPattern222k(object):
         for l in g[1]:
             (m,n) = self.__getIndex__ (l)
             self.matrix.setval(m,n,"-")
+
+    def setFromPattern (self, p):
+        for i in range(4):
+            for j in range(2*self.dim2):
+                self.matrix.setval(i,j, p.matrix.getval(i,j))
 
     def invertPattern (self):
         "Inverts the saved pattern"
@@ -95,10 +113,48 @@ class BinomialPattern222k(object):
         for i in range(4):
             for j in range(2*self.dim2):
                 spair.matrix.setval(i,j,combi(self.matrix.getval(i,j), p2.matrix.getval(i,j)))
-                
         return spair
+
+    def redu(self, p2):
+        "reduces self with respect to p2 if possible, otherwise returns self"
+        # Reduction is possible only if self has + everywhere where p2 has +
+        redu = BinomialPattern222k(self.dim2)
+        for i in range(4):
+            for j in range(2*self.dim2):
+                if p2.matrix.getval(i,j) == "+" and not self.matrix.getval(i.j) == "+":
+                    redu.setFromPattern(self)
+                    return redu
+
+        # Ok, reduction is possible
+        for i in range(4):
+            for j in range(2,self.dim2):
+                tosub = p2.matrix.getval(i,j)
+                if tosub == "0":
+                    redu.matrix.setval(i,j,self.matrix.getval(i,j))
+                    continue
+                if tosub == "+": # Note that self has a + too, so we leave redu with 0
+                    continue
+                if tosub == "-":
+                    orig = self.matrix.getval(i,j)
+                    if orig=="+":
+                        redu.matrix.setval(i,j,"2")
+                        continue
+                    if orig=="-":
+                        redu.matrix.setval(i,j,"*")
+                        continue
+                    if orig=="0":
+                        redu.matrix.setval(i,j,"+")
+
+
+        return redu
 
 def patternFromString222k(s , k=2):
     M = BinomialPattern222k(k)
     M.setFromBinomial(s)
+    return M
+
+def copyPattern222k(pattern):
+    k = pattern.dim2
+    M = BinomialPattern222k(k)
+    M.setFromPattern(pattern)
     return M
