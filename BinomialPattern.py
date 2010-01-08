@@ -1,13 +1,13 @@
 "Module for binomial Patterns"
 
-import CIMatrix
+from CIMatrix import *
 from CIutil import *
 
 class BinomialPattern222k(object):
     "Store and work with Binomial Patterns in CI analysis"
     # Defining the data :
     def __init__ (self, d2):
-        self.matrix = CIMatrix.CIMatrix(4,2*d2)
+        self.matrix = CIMatrix(4,2*d2)
         self.dim2 = d2
 
     def __getIndex__ (self, s):
@@ -58,35 +58,34 @@ class BinomialPattern222k(object):
         divisors = removeDup(g[0],g[1])
         for d in divisors:
             (m,n) = self.__getIndex__ (d)
-            self.matrix.setval(m,n,"*")
+            self.matrix.setval(m,n,CIMatrixEntry("*"))
         for l in g[0]:
             # for each positive term
             (m,n) = self.__getIndex__ (l)
-            self.matrix.setval(m,n,"+")
+            self.matrix.setval(m,n,CIMatrixEntry("1"))
         for l in g[1]:
             (m,n) = self.__getIndex__ (l)
-            self.matrix.setval(m,n,"-")
+            self.matrix.setval(m,n,CIMatrixEntry("-1"))
 
     def setFromPattern (self, p):
         for i in range(4):
             for j in range(2*self.dim2):
                 self.matrix.setval(i,j, p.matrix.getval(i,j))
 
-    def invertPattern (self):
+    def invert (self):
         "Inverts the saved pattern"
         for i in range(4):
             for j in range(2*self.dim2):
-                if self.matrix.getval(i,j) == "-": self.matrix.setval(i,j,"+")
-                else:
-                    if self.matrix.getval(i,j) == "+": self.matrix.setval(i,j,"-")
+                self.matrix.setval(i,j, -self.matrix.getval(i,j))
+        
 
     def fixTermOrder (self):
         "Fixes the pattern such that the last entry is a -"
         l = flatten(self.matrix.getRawList())
         l.reverse()
-        if l.index("+") < l.index("-"):
+        if l.index("+1") < l.index("-"):
             ### Pattern is wrong
-            self.invertPattern()
+            self.invert()
 
     def getString (self):
         """return string representing the pattern.
@@ -95,60 +94,26 @@ class BinomialPattern222k(object):
         pass
             
     def Spair (self, p2):
-        def combi(e1,e2):
-            # TODO: We need to handle -2 and alike
-            if e1=="0":
-                if e2=="-": return "+"
-                if e2=="+": return "-"
-                if e2=="*": return "*"
-            if e2=="0": return e1;
-            if e1=="+" and e2=="+": return "0";
-            if e1=="+" and e2=="-": return "2";
-            if e1=="-" and e2=="+": return "-2";
-            if e1=="-" and e2=="-": return "*";
-
         spair = BinomialPattern222k(self.dim2)
             
         "Forms an S-pair of the current pattern and p2"
         for i in range(4):
             for j in range(2*self.dim2):
-                spair.matrix.setval(i,j,combi(self.matrix.getval(i,j), p2.matrix.getval(i,j)))
+                spair.matrix.setval(i,j, self.matrix.getval(i,j) + p2.matrix.getval(i,j))
         return spair
 
     def redu(self, p2):
         "reduces self with respect to p2 if possible, otherwise return -1 if no reduction is possible, 0 otherwise"
-        # Reduction is possible only if self has + everywhere where p2 has +
-        for i in range(4):
-            for j in range(2*self.dim2):
-                if p2.matrix.getval(i,j) == "+" and not (self.matrix.getval(i,j) == "+" or self.matrix.getval(i,j)=="*"):
-                    return -1 
-
         # Ok, reduction is possible
-        for i in range(4):
-            for j in range(2*self.dim2):
-                tosub = p2.matrix.getval(i,j)
-                orig = self.matrix.getval(i,j)
-                if tosub == "0":
-                    continue
-                if tosub == "+": # Note that self has a + or * too!
-                    if orig=="*":
-                        self.matrix.setval(i,j,"-")
-                        continue
-                    if orig=="+":
-                        self.matrix.setval(i,j,"0")
-                        continue
-                if tosub == "-":
-                    if orig=="+":
-                        self.matrix.setval(i,j,"2")
-                        continue
-                    if orig=="-":
-                        self.matrix.setval(i,j,"*")
-                        continue
-                    if orig=="0":
-                        self.matrix.setval(i,j,"+")
-                        continue
-                    if orig=="*":
-                        self.matrix.setval(i,j,"+")
+        redu = copyPattern222k(self)
+        try:
+            for i in range(4):
+                for j in range(2*self.dim2):
+                    redu.matrix.setval(i,j, redu.matrix.getval(i,j)-p2.matrix.getval(i,j))
+        except NotReducibleError:
+            return -1
+        # Ok, was reducible
+        self.setFromPattern(redu)
         return 0
 
 def patternFromString222k(s , k=2):
