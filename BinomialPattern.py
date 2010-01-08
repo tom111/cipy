@@ -35,7 +35,7 @@ class BinomialPattern222k(object):
 
     def printAsMatrix (self): self.matrix.printMatrix()
 
-    def fromBinomial (self, s):
+    def setFromBinomial (self, s):
         "Init from Binomial string in 1,2,... notation"
         ## Init zero
         self.matrix.clear()
@@ -97,3 +97,8 @@ class BinomialPattern222k(object):
                 spair.matrix.setval(i,j,combi(self.matrix.getval(i,j), p2.matrix.getval(i,j)))
                 
         return spair
+
+def patternFromString222k(s , k=2):
+    M = BinomialPattern222k(k)
+    M.setFromBinomial(s)
+    return M
