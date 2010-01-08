@@ -1,9 +1,0 @@
-Classes 
-  Abstraction of a binom
-  Abstraction of a binomial ideal (Groebner basis?)
-  CI-Model specification
-
-Clients
-  Display of binom as matrix
-  Computation of Groebner Bases
-  Prim(ary|e) decomposition + Minimal Primes
