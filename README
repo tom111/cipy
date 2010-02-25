@@ -1,1 +1,5 @@
 cipy is a tool to analyze conditional independence models using Macaulay2
+
+Dependencies:
+
+numpy
